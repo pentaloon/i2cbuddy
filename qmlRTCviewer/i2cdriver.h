@@ -44,7 +44,7 @@ void i2c_monitor(I2CDriver *sd, int enable);
 void i2c_capture(I2CDriver *sd);
 
 int i2c_commands(I2CDriver *sd, int argc, char *argv[]);
-int i2c_qread(I2CDriver *sd, unsigned int dev, char *command, char dataout[]);
+int i2c_qread(I2CDriver *sd, unsigned int devAddress, unsigned int offset, char dataout[]);
 
 #endif
 

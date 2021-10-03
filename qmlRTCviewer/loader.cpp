@@ -6,27 +6,27 @@ Loader::Loader(QObject *parent) :
 {
 }
 
-void Loader::loadFile(const QString& file, BinaryData* display)
+void Loader::i2cRead(const QString& port, const QString& address, const QString& offset, const QString& length, BinaryData* display)
 {
-    const char* port = "/dev/ttyUSB0";
     I2CDriver i2c;
+    i2c_connect(&i2c, port.toLocal8Bit().data());
+    if (!i2c.connected)
+        qDebug() << "failed to connect via" << port;
+    else
+    {
+        qDebug() << "connected to" << port;
+        char data[(length.startsWith("0x")) ? length.toUInt(NULL, 16) : length.toUInt()];
+        unsigned int devAddress = (address.startsWith("0x")) ? address.toUInt(NULL, 16) : address.toUInt();
+        unsigned int registerOffset = (offset.startsWith("0x")) ? offset.toUInt(NULL, 16) : offset.toUInt();
 
-        i2c_connect(&i2c, port);
-        if (!i2c.connected)
-        {
-            qDebug() << "failed to connect via" << port;
-        }
-        else
-        {
-            char data[64];
-            qDebug() << "connected to" << port;
-            i2c_qread(&i2c, 0x68, "0x0", data);
-            // qDebug() << "output:" << data;
-            // need to use fromRawData to avoid \00's terminate the sequence of chars prematurely
-            const QByteArray qba = QByteArray::fromRawData(data,sizeof(data));
-            // TODO: "out-of-the-box" the UI will not load data if contains less bytes than 16 !!
-            display->load(qba);
-        }
+        i2c_qread(&i2c, devAddress, registerOffset, data);
+
+        // qDebug() << "output:" << data;
+        // need to use fromRawData to avoid \00's terminate the sequence of chars prematurely
+        const QByteArray qba = QByteArray::fromRawData(data,sizeof(data));
+        // TODO: "out-of-the-box" the UI will not load data if contains less bytes than 16 !!
+        display->load(qba);
+    }
 
 
 }

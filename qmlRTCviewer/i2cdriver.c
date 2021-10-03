@@ -560,29 +560,18 @@ int i2c_commands(I2CDriver *sd, int argc, char *argv[])
   return 0;
 }
 
-int i2c_qread(I2CDriver *sd, unsigned int dev, char *command, char dataout[])
+int i2c_qread(I2CDriver *sd, unsigned int devAddress, unsigned int offset, char dataout[])
 {
-        uint8_t bytes_write[8192];
-        char *endptr = command;
-        size_t nn = 0;
-        while (nn < sizeof(bytes_write)) {
-          bytes_write[nn++] = strtol(endptr, &endptr, 0);
-          if (*endptr == '\0')
-            break;
-          if (*endptr != ',') {
-            fprintf(stderr, "Invalid bytes '%s'\n", command);
-            return 1;
-          }
-          endptr++;
-        }
+        uint8_t bytes_write[1];
+        bytes_write[0] = offset;
 
-        i2c_start(sd, dev, 0);
-        i2c_write(sd, bytes_write, nn);
+        i2c_start(sd, devAddress, 0);
+        i2c_write(sd, bytes_write, 1);
 
         unsigned long count = sizeof(&dataout);
-        uint8_t bytes_read[8192];
+        uint8_t bytes_read[count];
 
-        i2c_start(sd, dev, 1);
+        i2c_start(sd, devAddress, 1);
         i2c_read(sd, bytes_read, count);
         i2c_stop(sd);
 

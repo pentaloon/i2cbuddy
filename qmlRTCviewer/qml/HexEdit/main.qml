@@ -6,15 +6,18 @@ import QtQuick.Layouts 1.0
 ApplicationWindow {
     width: 800
     height: 600
+    title: "I2C Buddy"
 
     LoadData { id: load }
 
     Action {
-        id: loadFile
+        id: i2cRead
+        shortcut: "Ctrl+R"
         onTriggered: {
-            load.loadFile(file.text, hexModel)
+            load.i2cRead(port.text, address.text, offset.text, length.text, hexModel)
         }
     }
+
     Action {
         id: searchFirstAction
         onTriggered: {
@@ -35,15 +38,50 @@ ApplicationWindow {
         RowLayout {
             width: parent.width
             TextField {
-                id: file
+                id: port
                 Layout.fillWidth: true
-                placeholderText: "file name"
-                onAccepted:  loadFile.trigger()
+                placeholderText: "serial port"
+                text: "/dev/ttyUSB0";
+                onAccepted:  i2cRead.trigger()
+                ToolTip.visible: hovered
+                ToolTip.text:"serial port"
+            }
+
+            TextField {
+                id: address
+                Layout.fillWidth: true
+                placeholderText: "address"
+                text: "0x68";
+                onAccepted:  i2cRead.trigger()
+                ToolTip.visible: hovered
+                ToolTip.text:"device address"
+            }
+
+            TextField {
+                id: offset
+                Layout.fillWidth: true
+                placeholderText: "offset"
+                text: "0";
+                onAccepted:  i2cRead.trigger()
+                ToolTip.visible: hovered
+                ToolTip.text:"register offset"
+            }
+
+            TextField {
+                id: length
+                Layout.fillWidth: true
+                placeholderText: "length"
+                text: "64";
+                onAccepted:  i2cRead.trigger()
+                ToolTip.visible: hovered
+                ToolTip.text:"data length"
             }
 
             Button {
-                text: "load"
-                action: loadFile
+                text: "read"
+                action: i2cRead
+                ToolTip.visible: hovered
+                ToolTip.text:"read I2C bus (Ctrl+R)"
             }
         }
 

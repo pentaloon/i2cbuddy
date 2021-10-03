@@ -11,7 +11,7 @@ class Loader : public QObject
 public:
     explicit Loader(QObject *parent = 0);
 
-    Q_INVOKABLE void loadFile(const QString& file, BinaryData* display);
+    Q_INVOKABLE void i2cRead(const QString& port, const QString& address, const QString& offset, const QString& length, BinaryData* display);
 signals:
 
 public slots:
